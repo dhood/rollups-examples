@@ -21,6 +21,7 @@
 #include "3rdparty/alpaca.cpp/ggml.h"
 
 #include "3rdparty/alpaca.cpp/utils.h"
+#include "streamtohex.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -811,14 +812,14 @@ const char * llama_print_system_info(void) {
     return s.c_str();
 }
 
-std::string call_gpt() {
+std::string call_gpt(std::string prompt) {
     ggml_time_init();
     const int64_t t_main_start_us = ggml_time_us();
 
     gpt_params params;
     params.interactive = false;
     params.interactive_start = false;
-    params.prompt = "Hello";
+    params.prompt = prompt;
 
 
 /*
@@ -971,6 +972,7 @@ std::string call_gpt() {
     }
 
     
+    char buffer[10000];
 
     while (remaining_tokens > 0) {
         // predict
@@ -1040,13 +1042,11 @@ std::string call_gpt() {
 
         // display text
         if (!input_noecho) {
-            char buffer[1000];
             for (auto id : embd) {
-                // printf("%s", vocab.id_to_token[id].c_str());
+                printf("%s", vocab.id_to_token[id].c_str());
                 sprintf(buffer, "%s ", vocab.id_to_token[id].c_str());
             }
-            return std::string("hi");//buffer);
-            // fflush(stdout);
+            fflush(stdout);
         }
 
         // in interactive mode, and not currently processing queued inputs;
@@ -1111,6 +1111,7 @@ std::string call_gpt() {
             } else {
                 printf("\n");
                 fprintf(stderr, " [end of text]\n");
+                return std::string(buffer);
                 break;
             }
         }
@@ -1146,8 +1147,13 @@ std::string handle_advance(httplib::Client &cli, picojson::value data) {
     std::cout << "Received advance request data " << data << std::endl;
     std::cout << "Adding notice" << std::endl;
     auto payload = data.get("payload").get<std::string>();
-    std::string return_payload = call_gpt();
-    auto notice = std::string("{\"payload\":\"") + return_payload + std::string("\"}");
+    hex2stream(payload, payload);
+    std::cout << "Received payload of: " << payload << std::endl;
+    std::string return_result = call_gpt(payload);
+    std::cout << "Sending payload of: " << return_result << std::endl;
+    std::string return_payload_hex;
+    stream2hex(return_result, return_payload_hex);
+    auto notice = std::string("{\"payload\":\"0x") + return_payload_hex + std::string("\"}");
     auto r = cli.Post("/notice", notice, "application/json");
     std::cout << "Received notice status " << r.value().status << " body " << r.value().body << std::endl;
     return "accept";

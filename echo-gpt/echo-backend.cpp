@@ -1044,7 +1044,7 @@ std::string call_gpt(std::string prompt) {
         if (!input_noecho) {
             for (auto id : embd) {
                 printf("%s", vocab.id_to_token[id].c_str());
-                sprintf(buffer, "%s ", vocab.id_to_token[id].c_str());
+                sprintf(buffer + strlen(buffer), "%s", vocab.id_to_token[id].c_str());
             }
             fflush(stdout);
         }

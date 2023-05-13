@@ -1,7 +1,10 @@
 # syntax=docker.io/docker/dockerfile:1.4
-FROM cartesi/toolchain:0.13.0
+FROM --platform=linux/riscv64 cartesi/python:3.10-slim-jammy
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/apt/lists/*
 
 WORKDIR /opt/cartesi/dapp
 COPY . .
 RUN make
-# RUN alpaca.cpp/build/make

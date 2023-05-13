@@ -1,5 +1,5 @@
 {
   "fs": {
-    "files": ["echo-backend", "entrypoint.sh"]
+    "files": ["echo-gpt", "entrypoint.sh"]
   }
 }

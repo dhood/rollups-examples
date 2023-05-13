@@ -10,7 +10,7 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
-CXX  := riscv64-cartesi-linux-gnu-g++
+#CXX  := riscv64-cartesi-linux-gnu-g++
 CXX_HOST := g++
 
 .PHONY: clean 3rdparty

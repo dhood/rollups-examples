@@ -13,7 +13,15 @@
 CXX  := clang-15 # riscv64-cartesi-linux-gnu-g++
 CXX_HOST := clang++-15 # g++
 
-.PHONY: clean 3rdparty
+.PHONY: clean 3rdparty all copy_header
+.PHONY: all copy_config clean
+
+all: copy_header
+
+copy_header: /usr/include/riscv64-linux-gnu/stubs-lp64.h
+	
+/usr/include/riscv64-linux-gnu/stubs-lp64.h: /usr/include/riscv64-linux-gnu/stubs-lp64d.h 
+	cp /usr/include/riscv64-linux-gnu/stubs-lp64d.h /usr/include/riscv64-linux-gnu/stubs-lp64.h
 
 echo-gpt: echo-backend.cpp
 	make -C 3rdparty

@@ -9,4 +9,6 @@ RUN apt-get update \
 
 WORKDIR /opt/cartesi/dapp
 COPY . .
+RUN chown -R root /usr/include/riscv64-linux-gnu
+# RUN cp /usr/include/riscv64-linux-gnu/stubs-lp64d.h /usr/include/riscv64-linux-gnu/stubs-lp64.h
 RUN make
